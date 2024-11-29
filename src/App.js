@@ -7,6 +7,7 @@ function App() {
   const [number, setNumber] = useState('');
   const [price, setPrice] = useState('');
   const [edittedCar, setEdittedCar] = useState(null);
+  const [search, setSearch] = useState('');
   const [cars, setCars] = useState([
     { name: 'Honda', number: '123-45-678', price: '15.55' },
     { name: 'Toyota', number: '321-54-786', price: '21.95' },
@@ -49,6 +50,11 @@ function App() {
   return (
     <>
       <div className="container text-center mt-3">
+        Search:
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        ></input>
         <div className="mb-3">
           <label htmlFor="name">Name:</label>
           <input
