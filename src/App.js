@@ -87,8 +87,8 @@ function App() {
             index={index}
             car={car}
             key={index}
-            onDeleteCar={() => deleteCar(index)}
-            onEditCar={() => editCar(index)}
+            deleteCar={deleteCar}
+            editCar={editCar}
           />
         ))}
       </div>
