@@ -1,21 +1,51 @@
 import { useState } from 'react';
 import './App.css';
+import Car from './components/Car';
 
 function App() {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const [price, setPrice] = useState('');
+  const [edittedCar, setEdittedCar] = useState(null);
   const [cars, setCars] = useState([
-    { name: 'Honda', number: '123-45-678' },
-    { name: 'Toyota', number: '321-54-786' },
-    { name: 'Tesla', number: '555-21-444' },
+    { name: 'Honda', number: '123-45-678', price: '15.55' },
+    { name: 'Toyota', number: '321-54-786', price: '21.95' },
+    { name: 'Tesla', number: '555-21-444', price: '35.94' },
   ]);
   const addCar = () => {
-    const newCar = { name: name, number: number };
+    const newCar = { name: name, number: number, price: price };
     setCars([...cars, newCar]);
     alert(name + ' Added');
     setName('');
     setNumber('');
   };
+  const deleteCar = (index) => {
+    const newCars = cars.slice();
+    newCars.splice(index, 1);
+    setCars(newCars);
+  };
+  const editCar = (index) => {
+    const newCars = cars.slice();
+    setName(newCars[index].name);
+    setNumber(newCars[index].number);
+    setPrice(newCars[index].price);
+    setEdittedCar(index);
+  };
+  const updateCar = () => {
+    const carIndex = edittedCar;
+    const newCars = cars.slice();
+    const carToEdit = newCars[carIndex];
+    carToEdit.name = name;
+    carToEdit.number = number;
+    carToEdit.price = price;
+    setCars(newCars);
+    setName('');
+    setNumber('');
+    setPrice('');
+    setEdittedCar(null);
+    alert('car price editted succesfully');
+  };
+
   return (
     <>
       <div className="container text-center mt-3">
@@ -36,24 +66,30 @@ function App() {
             value={number}
             onChange={(e) => setNumber(e.target.value)}
           ></input>
+          <label htmlFor="price" className="ms-3">
+            Price:
+          </label>
+          <input
+            name="price"
+            className="ms-3"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          ></input>
           <button className="btn btn-primary ms-3" onClick={addCar}>
             Add Car
           </button>
+          <button className="btn btn-warning ms-3" onClick={() => updateCar()}>
+            Finish Updating
+          </button>
         </div>
         {cars.map((car, index) => (
-          <div className="card mb-3 w-25 mx-auto bg-light" key={index}>
-            <div className="card-body">
-              <h5 className="card-title">{car.name}</h5>
-              <p className="card-text">Car number: {car.number}</p>
-              <button
-                href="#"
-                className="btn btn-primary"
-                onClick={() => alert(car.name)}
-              >
-                Check it out
-              </button>
-            </div>
-          </div>
+          <Car
+            index={index}
+            car={car}
+            key={index}
+            onDeleteCar={() => deleteCar(index)}
+            onEditCar={() => editCar(index)}
+          />
         ))}
       </div>
     </>
