@@ -1,72 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import Car from './components/Car';
+import { getAllCars, addCar, deleteCar, updateCar } from './api';
 
 function App() {
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [number, setNumber] = useState('');
   const [price, setPrice] = useState('');
-  const [edittedCar, setEdittedCar] = useState(null);
+  const [chosenCar, setChosenCar] = useState('');
   const [search, setSearch] = useState('');
-  const [cars, setCars] = useState([
-    { brand: 'Honda', model: 'Civic', number: '123-45-678', price: '15.55' },
-    { brand: 'Toyota', model: 'Corolla', number: '321-54-786', price: '21.95' },
-    { brand: 'Tesla', model: 'X1', number: '555-21-444', price: '35.94' },
-  ]);
-  const addCar = () => {
-    const validateNumberRegex = /^\d{3}-\d{2}-\d{3}$/;
-    if (brand === '' || model === '' || number === '' || price === '') {
-      alert('Fields cannot be empty!');
-      return;
-    } else if (!validateNumberRegex.test(number)) {
-      alert('Car number should be numbers in the pattern xxx-xx-xxx');
-      return;
-    }
-
-    const newCar = { brand: brand, model: model, number: number, price: price };
-    setCars([...cars, newCar]);
-    alert('New Car Added');
-    setBrand('');
-    setNumber('');
-    setModel('');
-    setPrice('');
+  const [cars, setCars] = useState([]);
+  const editCar = (car) => {
+    setBrand(car.brand);
+    setNumber(car.number);
+    setPrice(car.price);
+    setModel(car.model);
+    setChosenCar(car);
   };
-  const deleteCar = (index) => {
-    const validateDelete = window.confirm('Are you sure?');
-    if (validateDelete) {
-      const newCars = cars.slice();
-      newCars.splice(index, 1);
-      setCars(newCars);
-    } else {
-      alert('Car not deleted!');
-    }
+  useEffect(() => {
+    getAllCars().then((allCars) => setCars(allCars));
+  }, []);
+  const updatedCars = () => {
+    return cars.filter((car) => car.brand.startsWith(search));
   };
-  const editCar = (index) => {
-    const newCars = cars.slice();
-    setBrand(newCars[index].brand);
-    setNumber(newCars[index].number);
-    setPrice(newCars[index].price);
-    setModel(newCars[index].model);
-    setEdittedCar(index);
-  };
-  const updateCar = () => {
-    const carIndex = edittedCar;
-    const newCars = cars.slice();
-    const carToEdit = newCars[carIndex];
-    carToEdit.brand = brand;
-    carToEdit.number = number;
-    carToEdit.price = price;
-    carToEdit.model = model;
-    setCars(newCars);
-    setBrand('');
-    setNumber('');
-    setPrice('');
-    setModel('');
-    setEdittedCar(null);
-    alert('car editted succesfully');
-  };
-
   return (
     <>
       <div className="container text-center mt-3">
@@ -114,20 +71,26 @@ function App() {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           ></input>
-          <button className="btn btn-primary ms-3" onClick={addCar}>
+          <button
+            className="btn btn-primary ms-3"
+            onClick={() => addCar(brand, model, number, price)}
+          >
             Add Car
           </button>
-          <button className="btn btn-warning ms-3" onClick={() => updateCar()}>
+          <button
+            className="btn btn-warning ms-3"
+            onClick={() => updateCar(chosenCar, brand, model, number, price)}
+          >
             Finish Updating
           </button>
         </div>
-        {cars.map((car, index) => (
+        {updatedCars().map((car, index) => (
           <Car
             index={index}
             car={car}
             key={index}
-            deleteCar={deleteCar}
-            editCar={editCar}
+            deleteCar={() => deleteCar(car.id)}
+            editCar={() => editCar(car)}
           />
         ))}
       </div>
