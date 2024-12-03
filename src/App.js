@@ -3,48 +3,68 @@ import './App.css';
 import Car from './components/Car';
 
 function App() {
-  const [name, setName] = useState('');
+  const [brand, setBrand] = useState('');
+  const [model, setModel] = useState('');
   const [number, setNumber] = useState('');
   const [price, setPrice] = useState('');
   const [edittedCar, setEdittedCar] = useState(null);
   const [search, setSearch] = useState('');
   const [cars, setCars] = useState([
-    { name: 'Honda', number: '123-45-678', price: '15.55' },
-    { name: 'Toyota', number: '321-54-786', price: '21.95' },
-    { name: 'Tesla', number: '555-21-444', price: '35.94' },
+    { brand: 'Honda', model: 'Civic', number: '123-45-678', price: '15.55' },
+    { brand: 'Toyota', model: 'Corolla', number: '321-54-786', price: '21.95' },
+    { brand: 'Tesla', model: 'X1', number: '555-21-444', price: '35.94' },
   ]);
   const addCar = () => {
-    const newCar = { name: name, number: number, price: price };
+    const validateNumberRegex = /^\d{3}-\d{2}-\d{3}$/;
+    if (brand === '' || model === '' || number === '' || price === '') {
+      alert('Fields cannot be empty!');
+      return;
+    } else if (!validateNumberRegex.test(number)) {
+      alert('Car number should be numbers in the pattern xxx-xx-xxx');
+      return;
+    }
+
+    const newCar = { brand: brand, model: model, number: number, price: price };
     setCars([...cars, newCar]);
-    alert(name + ' Added');
-    setName('');
+    alert('New Car Added');
+    setBrand('');
     setNumber('');
+    setModel('');
+    setPrice('');
   };
   const deleteCar = (index) => {
-    const newCars = cars.slice();
-    newCars.splice(index, 1);
-    setCars(newCars);
+    const validateDelete = window.confirm('Are you sure?');
+    if (validateDelete) {
+      const newCars = cars.slice();
+      newCars.splice(index, 1);
+      setCars(newCars);
+    } else {
+      alert('Car not deleted!');
+    }
   };
   const editCar = (index) => {
     const newCars = cars.slice();
-    setName(newCars[index].name);
+    setBrand(newCars[index].brand);
     setNumber(newCars[index].number);
     setPrice(newCars[index].price);
+    setModel(newCars[index].model);
     setEdittedCar(index);
   };
   const updateCar = () => {
     const carIndex = edittedCar;
     const newCars = cars.slice();
     const carToEdit = newCars[carIndex];
-    carToEdit.name = name;
+    carToEdit.brand = brand;
     carToEdit.number = number;
     carToEdit.price = price;
+    carToEdit.model = model;
     setCars(newCars);
-    setName('');
+    setBrand('');
     setNumber('');
     setPrice('');
+    setModel('');
     setEdittedCar(null);
-    alert('car price editted succesfully');
+    alert('car editted succesfully');
   };
 
   return (
@@ -54,19 +74,30 @@ function App() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          className="mb-3"
         ></input>
         <div className="mb-3">
-          <label htmlFor="name">Name:</label>
+          <label htmlFor="brand">Brand:</label>
           <input
-            name="name"
+            required
+            name="brand"
             className="ms-3"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+          ></input>{' '}
+          <label htmlFor="model">Model:</label>
+          <input
+            required
+            name="model"
+            className="ms-3"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
           ></input>
           <label htmlFor="number" className="ms-3">
             Number:
           </label>
           <input
+            required
             name="number"
             className="ms-3"
             value={number}
@@ -76,6 +107,8 @@ function App() {
             Price:
           </label>
           <input
+            type="number"
+            required
             name="price"
             className="ms-3"
             value={price}
